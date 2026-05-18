@@ -1,0 +1,3 @@
+class WrongSyntaxError(Exception):
+    pass
+

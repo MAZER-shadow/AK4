@@ -1,0 +1,85 @@
+name: Pylint
+
+on: [push]
+
+jobs:
+  unit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python "3.12"
+        uses: actions/setup-python@v3
+        with:
+          python-version: "3.12"
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: Testing Unit cases
+        run: |
+          python -m unittest discover -s emulator/ -p 'unit_*.py'
+  golden:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python "3.12"
+        uses: actions/setup-python@v3
+        with:
+          python-version: "3.12"
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: Golden hello
+        run: |
+           python compiler/golden_runner.py test/hello
+
+      - name: Golden cat
+        run: |
+           python compiler/golden_runner.py test/cat
+
+      - name: Golden hello_user_name
+        run: |
+           python compiler/golden_runner.py test/hello_user_name
+
+      - name: Golden sort
+        run: |
+           python compiler/golden_runner.py test/sort
+
+      - name: Golden double
+        run: |
+           python compiler/golden_runner.py test/double
+
+      - name: Golden euler
+        run: |
+           python compiler/golden_runner.py test/euler
+
+      - name: Golden simple vec
+        run: |
+           python compiler/golden_runner.py test/vec
+
+      - name: Golden func simple
+        run: |
+           python compiler/golden_runner.py test/func_simple
+
+      - name: Golden func vec
+        run: |
+           python compiler/golden_runner.py test/func_vec
+          
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python "3.12"
+      uses: actions/setup-python@v3
+      with:
+        python-version: "3.12"
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pylint
+    - name: Analysing the code with pylint
+      run: |
+        pylint --errors-only $(git ls-files '*.py') 

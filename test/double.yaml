@@ -1,0 +1,71 @@
+code: |-
+  .section data
+
+  .org 0x22
+  num1_lower: .word 0x25d7239c
+  num1_upper: .word 0x19f28daa
+  num2_lower: .word 0xff826798
+  num2_upper: .word 0xffffffff
+  res_lower:  .word 0
+  res_upper:  .word 0
+
+  .section text
+  start:
+     ld_a     num1_lower
+     add_a    num2_lower
+     st       res_lower
+     jnc      no_c_flag
+     ld       1
+     jmp      upper
+
+  no_c_flag:
+     ld       0
+     jmp      upper
+
+  upper:
+     add_a    num1_upper
+     add_a    num2_upper
+     st       res_upper
+
+     ld_a     res_upper
+     out       1
+     ld_a     res_lower
+     out       1
+     halt
+
+  .section int
+      ret
+config: |
+  {
+    "mem_size": 2048,
+    "tick_cnt": 400,
+    "report": "ac: {ac} ar: {ar} pc: {pc} cr: {cr}",
+    "res": "hex",
+    "assert": "19f28daa 25598b34 "
+  }
+assert_cmem: |
+  10: opcode: 60 arg: 00000022 -- ld_a 34
+  15: opcode: 61 arg: 0000002a -- add_a 42
+  20: opcode: 6b arg: 00000032 -- st 50
+  25: opcode: 52 arg: 00000028 -- jnc 40
+  30: opcode: 40 arg: 00000001 -- ld 1
+  35: opcode: 4b arg: 00000032 -- jmp 50
+  40: opcode: 40 arg: 00000000 -- ld 0
+  45: opcode: 4b arg: 00000032 -- jmp 50
+  50: opcode: 61 arg: 00000026 -- add_a 38
+  55: opcode: 61 arg: 0000002e -- add_a 46
+  60: opcode: 6b arg: 00000036 -- st 54
+  65: opcode: 60 arg: 00000036 -- ld_a 54
+  70: opcode: 6f arg: 00000001 -- out 1
+  75: opcode: 60 arg: 00000032 -- ld_a 50
+  80: opcode: 6f arg: 00000001 -- out 1
+  85: opcode: 07 -- halt
+  86: opcode: 08 -- ret
+assert_mem: |
+  34: data: 25d7239c
+  38: data: 19f28daa
+  42: data: ff826798
+  46: data: ffffffff
+  50: data: 00000000
+  54: data: 00000000
+assert_report: "ac: 00000000 ar: 00000000 pc: 00000000 cr: 0000000000\nac: 00000000 ar: 00000000 pc: 00000005 cr: 4b0000000a\nac: 00000000 ar: 00000000 pc: 0000000a cr: 4b0000000a\nac: 00000000 ar: 00000000 pc: 0000000a cr: 4b0000000a\nac: 00000000 ar: 00000022 pc: 0000000f cr: 6000000022\nac: 00000000 ar: 00000022 pc: 0000000f cr: 6000000022\nac: 25d7239c ar: 00000022 pc: 0000000f cr: 6000000022\nac: 25d7239c ar: 00000022 pc: 0000000f cr: 6000000022\nac: 25d7239c ar: 0000002a pc: 00000014 cr: 610000002a\nac: 25d7239c ar: 0000002a pc: 00000014 cr: 610000002a\nac: 25598b34 ar: 0000002a pc: 00000014 cr: 610000002a\nac: 25598b34 ar: 0000002a pc: 00000014 cr: 610000002a\nac: 25598b34 ar: 00000032 pc: 00000019 cr: 6b00000032\nac: 25598b34 ar: 00000032 pc: 00000019 cr: 6b00000032\nac: 25598b34 ar: 00000032 pc: 00000019 cr: 6b00000032\nac: 25598b34 ar: 00000032 pc: 0000001e cr: 5200000028\nac: 25598b34 ar: 00000032 pc: 0000001e cr: 5200000028\nac: 25598b34 ar: 00000032 pc: 0000001e cr: 5200000028\nac: 25598b34 ar: 00000032 pc: 00000023 cr: 4000000001\nac: 00000001 ar: 00000032 pc: 00000023 cr: 4000000001\nac: 00000001 ar: 00000032 pc: 00000023 cr: 4000000001\nac: 00000001 ar: 00000032 pc: 00000028 cr: 4b00000032\nac: 00000001 ar: 00000032 pc: 00000032 cr: 4b00000032\nac: 00000001 ar: 00000032 pc: 00000032 cr: 4b00000032\nac: 00000001 ar: 00000026 pc: 00000037 cr: 6100000026\nac: 00000001 ar: 00000026 pc: 00000037 cr: 6100000026\nac: 19f28dab ar: 00000026 pc: 00000037 cr: 6100000026\nac: 19f28dab ar: 00000026 pc: 00000037 cr: 6100000026\nac: 19f28dab ar: 0000002e pc: 0000003c cr: 610000002e\nac: 19f28dab ar: 0000002e pc: 0000003c cr: 610000002e\nac: 19f28daa ar: 0000002e pc: 0000003c cr: 610000002e\nac: 19f28daa ar: 0000002e pc: 0000003c cr: 610000002e\nac: 19f28daa ar: 00000036 pc: 00000041 cr: 6b00000036\nac: 19f28daa ar: 00000036 pc: 00000041 cr: 6b00000036\nac: 19f28daa ar: 00000036 pc: 00000041 cr: 6b00000036\nac: 19f28daa ar: 00000036 pc: 00000046 cr: 6000000036\nac: 19f28daa ar: 00000036 pc: 00000046 cr: 6000000036\nac: 19f28daa ar: 00000036 pc: 00000046 cr: 6000000036\nac: 19f28daa ar: 00000036 pc: 00000046 cr: 6000000036\nac: 19f28daa ar: 00000001 pc: 0000004b cr: 6f00000001\nac: 19f28daa ar: 00000001 pc: 0000004b cr: 6f00000001\nac: 19f28daa ar: 00000001 pc: 0000004b cr: 6f00000001\nac: 19f28daa ar: 00000032 pc: 00000050 cr: 6000000032\nac: 19f28daa ar: 00000032 pc: 00000050 cr: 6000000032\nac: 25598b34 ar: 00000032 pc: 00000050 cr: 6000000032\nac: 25598b34 ar: 00000032 pc: 00000050 cr: 6000000032\nac: 25598b34 ar: 00000001 pc: 00000055 cr: 6f00000001\nac: 25598b34 ar: 00000001 pc: 00000055 cr: 6f00000001\nac: 25598b34 ar: 00000001 pc: 00000055 cr: 6f00000001\nac: 25598b34 ar: 00000001 pc: 00000056 cr: 0708000000\nac: 25598b34 ar: 00000001 pc: 00000056 cr: 0708000000\n19f28daa 25598b34 \nAssertion passed\n"

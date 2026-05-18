@@ -1,0 +1,9 @@
+.idea
+__pycache__
+**/test.asm
+**/*.cmem
+**/*.mem
+test/*.asm
+test/*.json
+**/*.creport
+**/*.dreport
